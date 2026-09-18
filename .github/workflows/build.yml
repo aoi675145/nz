@@ -6,7 +6,7 @@ on:
       image_name:
         description: '镜像名称'
         required: true
-        default: 'argo-nezha'
+        default: 'nz'
         type: string
       image_tag:
         description: '镜像标签'
