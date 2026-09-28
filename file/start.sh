@@ -294,7 +294,15 @@ start_nginx_cloudflared() {
             mv "$DL_TMP/$cf_bin" "$WORK_DIR/$cf_bin"
         fi
         info "启动 cloudflared..."
-        TUNNEL_TOKEN="$ARGO_AUTH" nohup ./$cf_bin tunnel --protocol http2 run >/dev/null 2>&1 &
+        (
+  export TUNNEL_TOKEN="$ARGO_AUTH"
+  while true; do
+    [ -f /app/cloudflared.log ] && [ "$(wc -c < /app/cloudflared.log)" -gt 5242880 ] && : > /app/cloudflared.log
+    ./$cf_bin tunnel --protocol http2 run >> /app/cloudflared.log 2>&1
+    echo "[$(date)] cloudflared exited, restarting in 5s" >> /app/cloudflared.log
+    sleep 5
+  done
+) >/dev/null 2>&1 &
     fi
 
     ok "nginx + cloudflared 启动完成"
