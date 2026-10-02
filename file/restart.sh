@@ -13,7 +13,7 @@ case $(uname -m) in
 esac
 
 info "停止 dashboard..."
-pkill -f "dashboard-linux-${ARCH}" 2>/dev/null || true
+pkill -9 -f "dashboard-linux-${ARCH}" 2>/dev/null || true
 sleep 1
 
 info "启动 dashboard..."
