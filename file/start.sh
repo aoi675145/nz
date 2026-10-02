@@ -409,6 +409,12 @@ main() {
     step "4/6 启动 nginx + cloudflared（全程在线）"
     start_nginx_cloudflared
 
+    # ---------- 内存看门狗：进程去重 + 超阈值重启（防止 cloudflared / dashboard 涨到容器内存上限） ----------
+    if ! pgrep -f 'while true; do bash /app/watchdog.sh' >/dev/null 2>&1; then
+        nohup bash -c 'while true; do bash /app/watchdog.sh; sleep 60; done' >> /app/watchdog.log 2>&1 &
+        sub "内存看门狗已启动"
+    fi
+
     step "5/6 检查 GitHub 备份"
     if has_backup; then
         info "检测到备份，进入常规启动模式"
@@ -463,7 +469,7 @@ main() {
 
         # 停止 dashboard，释放数据库
         info "停止 dashboard 释放数据库..."
-        pkill -f "dashboard-linux-${ARCH}" 2>/dev/null || true
+        pkill -9 -f "dashboard-linux-${ARCH}" 2>/dev/null || true
         sleep 1
         ok "已停止 dashboard"
 
