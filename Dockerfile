@@ -18,7 +18,7 @@ COPY file/* /app/
 
 WORKDIR /app
 
-RUN chmod +x start.sh backup.sh restore.sh restart.sh renew.sh
+RUN chmod +x start.sh backup.sh restore.sh restart.sh renew.sh watchdog.sh restart-cf.sh
 
 EXPOSE 80 443
 
